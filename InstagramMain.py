@@ -4,10 +4,13 @@ import os
 import argparse
 
 meme_page_usernames = ["oppyolly"]
-number_of_daily_posts = 1
+
+NUMBER_OF_DAILY_POSTS = 1
+VIDEO_DIR = "./videos"
+CAPTION = "This is a test caption"
 
 def login(client):
-    client.login("hairy_choiga_23", "787newpassword")
+    client.login("hairy_choiga_24", "787newpassword2")
 
 def pull_meme_data(client, meme_page_usernames):
     user_media_map = {}
@@ -21,20 +24,20 @@ def download_videos_for_upload(user_media_map):
     all_media = user_media_map.values()
     all_media = sum(all_media, [])
     all_media = sorted(all_media, key=lambda post: post.like_count)
-    all_media = all_media[:number_of_daily_posts]
+    all_media = all_media[:NUMBER_OF_DAILY_POSTS]
     print(len(all_media))
-    for i in range(0, number_of_daily_posts):
+    for i in range(0, NUMBER_OF_DAILY_POSTS):
         url = all_media[i].video_url 
         if url is not None:
-            urlretrieve(str(url), "daily_videos_" + str(i) + ".mp4")
+            video_name = "daily_videos_" + str(i) + ".mp4"
+            video_path = os.path.join(VIDEO_DIR, video_name)
+            urlretrieve(str(url), video_path)
 
-def upload_videos(client):
-    files = os.listdir('.')
-    files = [file for file in files if "daily_videos" in file]
-    if len(files) > 0:
-        next_file_upload_name = files[0]
-        client.clip_upload(os.path.dirname(__file__) + "/" + next_file_upload_name, "hello this is a test from instagrapi")
-        os.remove(next_file_upload_name)
+def upload_videos(client, count=1):
+    for i, file in zip(range(count), os.listdir(VIDEO_DIR)):
+        video_path = os.path.join(VIDEO_DIR, file)
+        client.clip_upload(video_path, CAPTION)
+        os.remove(video_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -43,6 +46,10 @@ if __name__ == "__main__":
 
     cl = Client()
     login(cl)
+
+    # make sure the video directory exists
+    if not os.path.exists(VIDEO_DIR):
+        os.makedirs(VIDEO_DIR)
 
     if args.state == "1":
         print(args.state)
