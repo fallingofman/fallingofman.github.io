@@ -1,2 +1,4 @@
 videos/*
 .ipynb_checkpoints/*
+secret.txt
+__pycache__

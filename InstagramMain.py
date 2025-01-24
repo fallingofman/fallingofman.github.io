@@ -2,6 +2,7 @@ from instagrapi import Client
 from urllib.request import urlretrieve
 import os
 import argparse
+from Login import load_secret
 
 meme_page_usernames = ["oppyolly"]
 
@@ -10,7 +11,15 @@ VIDEO_DIR = "./videos"
 CAPTION = "This is a test caption"
 
 def login(client):
-    client.login("hairy_choiga_24", "787newpassword2")
+    # if there is a secret file, use that to login
+    # otherwise use "hairy_choiga_23"
+    username = "hairy_choiga_23"
+    password = "787newpassword"
+
+    if os.path.exists("./secret.txt"):
+        username, password = load_secret("./secret.txt")
+    
+    client.login(username, password)
 
 def pull_meme_data(client, meme_page_usernames):
     user_media_map = {}
