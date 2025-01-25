@@ -4,8 +4,6 @@ import os
 import argparse
 from Login import load_secret
 
-meme_page_usernames = ["oppyolly"]
-
 NUMBER_OF_DAILY_POSTS = 1
 VIDEO_DIR = "./videos"
 CAPTION = "This is a test caption"
@@ -21,9 +19,9 @@ def login(client):
     
     client.login(username, password)
 
-def pull_meme_data(client, meme_page_usernames):
+def pull_meme_data(client, usernames_list):
     user_media_map = {}
-    for username in meme_page_usernames:
+    for username in usernames_list:
         user_id = client.user_id_from_username(username)
         user_media_map[username] = client.user_medias(user_id, 20)
     print(user_media_map)
@@ -48,24 +46,39 @@ def upload_videos(client, count=1):
         client.clip_upload(video_path, CAPTION)
         os.remove(video_path)
 
+def load_accounts(accounts_dir):
+    accounts_list = []
+    with open(accounts_dir, 'r') as f:
+        for line in f:
+            accounts_list.append(line.strip())
+    return accounts_list
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--state', help='1: download, 2: upload')
+    parser.add_argument('--mode', help='1: download, 2: upload')
+    parser.add_argument('--userlist', help='path to users file, a list of all users to target', required=True)
     args = parser.parse_args()
-
-    cl = Client()
-    login(cl)
 
     # make sure the video directory exists
     if not os.path.exists(VIDEO_DIR):
         os.makedirs(VIDEO_DIR)
 
-    if args.state == "1":
-        print(args.state)
-        user_media_map = pull_meme_data(cl, meme_page_usernames)
+    user_list_dir = args.userlist
+    user_list = load_accounts(user_list_dir)
+
+    print("user list:")
+    print("\n".join(user_list))
+    
+    cl = Client()
+    login(cl)
+
+    if args.mode == "1":
+        print("downloading mode")
+        user_media_map = pull_meme_data(cl, user_list)
         print(user_media_map)
         download_videos_for_upload(user_media_map)
-    if args.state == "2":
+    if args.mode == "2":
+        print("uploading mode")
         upload_videos(cl)
 
 
