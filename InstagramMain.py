@@ -5,8 +5,8 @@ import argparse
 from Login import load_secret
 from MediaStore import VideoInfo, MediaStore
 
-NUMBER_OF_DAILY_POSTS = 24
-LAST_N_POSTS = 20
+NUMBER_OF_DAILY_POSTS = 8
+LAST_N_POSTS = 10
 VIDEO_DIR = "./videos"
 CAPTION = "This is a test caption"
 
